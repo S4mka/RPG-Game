@@ -1,0 +1,53 @@
+# Unity бинарные файлы
+*.unity binary
+*.prefab binary
+*.mat binary
+*.asset binary
+*.controller binary
+
+# 3D модели
+*.fbx binary
+*.obj binary
+*.blend binary
+*.ma binary
+*.mb binary
+
+# Текстуры и изображения
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.tga binary
+*.psd binary
+*.exr binary
+
+# Аудио
+*.wav binary
+*.mp3 binary
+*.ogg binary
+
+# Видео
+*.mp4 binary
+*.mov binary
+*.avi binary
+
+# Шейдеры и материалы (хотя .shader текстовый, но лучше через LFS)
+*.shader binary
+*.compute binary
+
+# Другие Unity файлы
+*.anim binary
+*.unitypackage binary
+*.cubemap binary
+
+# Убедитесь, что текстовые файлы НЕ через LFS
+*.cs text
+*.json text
+*.txt text
+*.md text
+*.xml text
+*.yaml text
+*.yml text
+
+# Git LFS управление
+*.gitattributes text
+.gitignore text
