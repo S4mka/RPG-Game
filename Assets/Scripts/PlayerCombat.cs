@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerCombat : MonoBehaviour, IDamageDealer
+public class PlayerCombat : MonoBehaviour
 {
     [SerializeField] private CharacterStats stats;
     [SerializeField] private GameObject magicProjectilePrefab;
@@ -14,7 +14,7 @@ public class PlayerCombat : MonoBehaviour, IDamageDealer
         if (Input.GetMouseButtonDown(0))
             MeleeAttack();
 
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetKeyDown(KeyCode.E))
             MagicAttack();
     }
 
@@ -25,7 +25,9 @@ public class PlayerCombat : MonoBehaviour, IDamageDealer
         {
             IDamageable target = hit.collider.GetComponent<IDamageable>();
             if (target != null)
+            {
                 target.TakeDamage(new DamageData(stats.physicalDamage, DamageType.Physical));
+            }
         }
     }
 
@@ -34,12 +36,12 @@ public class PlayerCombat : MonoBehaviour, IDamageDealer
         if (Time.time < lastMagicTime + magicCooldown)
             return;
 
-        Instantiate(magicProjectilePrefab, shootPoint.position, shootPoint.rotation);
-        lastMagicTime = Time.time;
-    }
+        GameObject projectile = Instantiate(
+            magicProjectilePrefab,
+            shootPoint.position,
+            shootPoint.rotation
+        );
 
-    public DamageData GetDamage()
-    {
-        return new DamageData(stats.physicalDamage, DamageType.Physical);
+        lastMagicTime = Time.time;
     }
 }
