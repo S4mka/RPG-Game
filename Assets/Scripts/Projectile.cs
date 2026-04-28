@@ -2,15 +2,9 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    private DamageData damage;
-
     public float speed = 10f;
     public float lifeTime = 5f;
-
-    public void Init(DamageData damageData)
-    {
-        damage = damageData;
-    }
+    public float damage = 20f;
 
     private void Start()
     {
@@ -24,11 +18,11 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        IDamageable target = other.GetComponent<IDamageable>();
+        var health = other.GetComponent<HealthMono>();
 
-        if (target != null)
+        if (health != null)
         {
-            target.TakeDamage(damage);
+            health.TakeDamage(damage);
             Destroy(gameObject);
         }
     }

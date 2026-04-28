@@ -1,17 +1,16 @@
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
-    public float moveSpeed = 5f;
-    public float runSpeed = 8f;
     public Transform cameraTransform;
 
-    private CharacterController controller;
+    private PlayerModel model;
+    private PlayerMover mover;
 
-    private void Awake()
+    private void Start()
     {
-        controller = GetComponent<CharacterController>();
+        model = new PlayerModel(100, 50);
+        mover = GameBootstrapperMB.Instance.PlayerMover;
     }
 
     private void Update()
@@ -19,16 +18,38 @@ public class PlayerController : MonoBehaviour
         Move();
     }
 
-    private void Move()
+    void Move()
     {
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
 
-        Vector3 move = cameraTransform.forward * v + cameraTransform.right * h;
-        move.y = 0;
+        Vector3 dir =
+            cameraTransform.forward * v +
+            cameraTransform.right * h;
 
-        float speed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : moveSpeed;
+        dir.y = 0;
+        dir.Normalize();
 
-        controller.Move(move * speed * Time.deltaTime);
+        bool run = Input.GetKey(KeyCode.LeftShift);
+
+        Vector3 newPos = mover.Move(
+            transform.position,
+            dir,
+            run,
+            Time.deltaTime
+        );
+
+        transform.position = newPos;
+
+        if (dir.magnitude > 0.1f)
+        {
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                Quaternion.LookRotation(dir),
+                Time.deltaTime * 10f
+            );
+        }
+
+        model.Position = transform.position;
     }
 }
