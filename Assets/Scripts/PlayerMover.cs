@@ -5,6 +5,10 @@ public class PlayerMover
     private float moveSpeed;
     private float runSpeed;
 
+    public PlayerMover()
+    {
+    }
+
     public PlayerMover(float moveSpeed, float runSpeed)
     {
         this.moveSpeed = moveSpeed;

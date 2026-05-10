@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerCombat : MonoBehaviour
 {
@@ -11,30 +12,50 @@ public class PlayerCombat : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            Debug.Log("Физическая атака (ЛКМ)");
             MeleeAttack();
+        }
 
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame)
+        {
+            Debug.Log("Магическая атака (ПКМ)");
             MagicAttack();
+        }
     }
 
     void MeleeAttack()
     {
         RaycastHit hit;
+
         if (Physics.Raycast(transform.position, transform.forward, out hit, 2f))
         {
             IDamageable target = hit.collider.GetComponent<IDamageable>();
+
             if (target != null)
             {
+                Debug.Log($"Попал по {hit.collider.name} физической атакой");
                 target.TakeDamage(new DamageData(stats.physicalDamage, DamageType.Physical));
             }
+            else
+            {
+                Debug.Log("Физическая атака: цель без IDamageable");
+            }
+        }
+        else
+        {
+            Debug.Log("Физическая атака: никого не задел");
         }
     }
 
     void MagicAttack()
     {
         if (Time.time < lastMagicTime + magicCooldown)
+        {
+            Debug.Log("Магия на кулдауне");
             return;
+        }
 
         GameObject projectile = Instantiate(
             magicProjectilePrefab,
@@ -42,6 +63,14 @@ public class PlayerCombat : MonoBehaviour
             shootPoint.rotation
         );
 
+        Projectile proj = projectile.GetComponent<Projectile>();
+
+        if (proj != null)
+        {
+            proj.Init(stats.magicalDamage);
+        }
+
+        Debug.Log("Выстрел магией!");
         lastMagicTime = Time.time;
     }
 }

@@ -104,7 +104,8 @@ public class MeleeEnemyAI : MonoBehaviour
     {
         anim.SetBool("isAttack", true);
 
-        PlayerHealth playerHealth = target.GetComponent<PlayerHealth>();
+        Health playerHealth = target.GetComponent<Health>();
+        DamageData damage = target.GetComponent<DamageData>();
         if (playerHealth != null)
         {
             playerHealth.TakeDamage(damage);

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -10,7 +11,29 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         model = new PlayerModel(100, 50);
+
+        if (GameBootstrapperMB.Instance == null)
+        {
+            Debug.LogError("GameBootstrapperMB.Instance == null");
+            enabled = false;
+            return;
+        }
+
         mover = GameBootstrapperMB.Instance.PlayerMover;
+
+        if (mover == null)
+        {
+            Debug.LogError("PlayerMover == null");
+            enabled = false;
+            return;
+        }
+
+        if (cameraTransform == null)
+        {
+            Debug.LogError("cameraTransform is not assigned");
+            enabled = false;
+            return;
+        }
     }
 
     private void Update()
@@ -20,17 +43,25 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
+        if (Keyboard.current == null || mover == null || cameraTransform == null)
+            return;
+
+        float h = 0f;
+        float v = 0f;
+
+        if (Keyboard.current.aKey.isPressed) h -= 1f;
+        if (Keyboard.current.dKey.isPressed) h += 1f;
+        if (Keyboard.current.wKey.isPressed) v += 1f;
+        if (Keyboard.current.sKey.isPressed) v -= 1f;
 
         Vector3 dir =
             cameraTransform.forward * v +
             cameraTransform.right * h;
 
-        dir.y = 0;
+        dir.y = 0f;
         dir.Normalize();
 
-        bool run = Input.GetKey(KeyCode.LeftShift);
+        bool run = Keyboard.current.leftShiftKey.isPressed;
 
         Vector3 newPos = mover.Move(
             transform.position,

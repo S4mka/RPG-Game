@@ -1,9 +1,11 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "RPG/Character Stats")]
-public class CharacterStats : ScriptableObject
+[System.Serializable]
+public class CharacterStats
 {
     public float maxHP = 100;
-    public float physicalDamage = 10;
-    public float magicalDamage = 20;
+    public float currentHP = 100;
+
+    public float physicalDamage = 20;
+    public float magicalDamage = 30;
 }
