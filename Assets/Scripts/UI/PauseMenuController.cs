@@ -4,6 +4,7 @@ using AdvancedRPG.Gameplay.Enemies;
 using AdvancedRPG.Save;
 using AdvancedRPG.Services;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace AdvancedRPG.UI
@@ -17,7 +18,12 @@ namespace AdvancedRPG.UI
         [SerializeField] private string mainMenuSceneName = "MainMenu";
         [SerializeField] private CharacterHealthView player;
         [SerializeField] private MobKillCounter killCounter;
+
+        [Header("New Input System Actions")]
+        [SerializeField] private InputActionReference pauseAction;
+
         private bool opened;
+
         private void Awake()
         {
             mainMenuButton.onClick.AddListener(() => ServiceLocator.Get<ISceneLoader>().Load(mainMenuSceneName));
@@ -25,11 +31,37 @@ namespace AdvancedRPG.UI
             loadButton.onClick.AddListener(() => ServiceLocator.Get<SaveLoadInteractor>().LoadGame(player, killCounter));
             panel.SetActive(false);
         }
-        private void Update()
+
+        private void OnEnable()
         {
-            if (!Input.GetKeyDown(KeyCode.Escape)) return;
-            opened = !opened; panel.SetActive(opened); Time.timeScale = opened ? 0f : 1f;
-            Cursor.lockState = opened ? CursorLockMode.None : CursorLockMode.Locked; Cursor.visible = opened;
+            if (pauseAction == null || pauseAction.action == null)
+                return;
+
+            pauseAction.action.Enable();
+            pauseAction.action.performed += OnPausePerformed;
+        }
+
+        private void OnDisable()
+        {
+            if (pauseAction == null || pauseAction.action == null)
+                return;
+
+            pauseAction.action.performed -= OnPausePerformed;
+            pauseAction.action.Disable();
+        }
+
+        private void OnPausePerformed(InputAction.CallbackContext context)
+        {
+            TogglePause();
+        }
+
+        private void TogglePause()
+        {
+            opened = !opened;
+            panel.SetActive(opened);
+            Time.timeScale = opened ? 0f : 1f;
+            Cursor.lockState = opened ? CursorLockMode.None : CursorLockMode.Locked;
+            Cursor.visible = opened;
         }
     }
 }

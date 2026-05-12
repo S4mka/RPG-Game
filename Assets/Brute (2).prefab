@@ -480,21 +480,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9b36e25638605e94a968abd85939b7b7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7262114418183238779}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9b36e25638605e94a968abd85939b7b7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1028021680524666238}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9b36e25638605e94a968abd85939b7b7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 8928908690130789248}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9b36e25638605e94a968abd85939b7b7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 584011486390535981}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9b36e25638605e94a968abd85939b7b7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 3144356028763648698}
-    - targetCorrespondingSourceObject: {fileID: -5770850338934133332, guid: 9b36e25638605e94a968abd85939b7b7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 4504559257491698100}
     - targetCorrespondingSourceObject: {fileID: -5770850338934133332, guid: 9b36e25638605e94a968abd85939b7b7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8184078079447443213}
@@ -504,19 +489,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: -5770850338934133332, guid: 9b36e25638605e94a968abd85939b7b7, type: 3}
   m_PrefabInstance: {fileID: 8623326587148917826}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4504559257491698100
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6360745026423763438}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 912c5e94c41c50e43b927710b95021f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamageSword
-  damageAmount: 20
 --- !u!64 &8184078079447443213
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -596,61 +568,3 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1028021680524666238
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8893866021530394899}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96fb67394590b1d409f364516ab3551e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AnimationController
---- !u!114 &8928908690130789248
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8893866021530394899}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c9b77727a9d49c479d34e69d583157c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  cameraTransform: {fileID: 0}
---- !u!114 &584011486390535981
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8893866021530394899}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af2ad78dc0b541344ae2ae1b8e4fd701, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealthMono
-  hp: 100
---- !u!114 &3144356028763648698
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8893866021530394899}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67276658974b9794f97350e0833ee588, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
-  stats:
-    maxHP: 100
-    currentHP: 100
-    physicalDamage: 20
-    magicalDamage: 30
-  magicProjectilePrefab: {fileID: 1947394518247757981, guid: 02623afd67860a64598341eb51413726, type: 3}
-  shootPoint: {fileID: 4185301576063444779}
-  magicCooldown: 3

@@ -7,7 +7,7 @@ namespace AdvancedRPG.Gameplay.Combat
     {
         [SerializeField] private float damage = 25f;
         [SerializeField] private LayerMask targetMask;
-        [SerializeField] private float activeSeconds = 0.2f;
+        [SerializeField] private float activeSeconds = 1f;
 
         private Collider hitbox;
         private GameObject owner;

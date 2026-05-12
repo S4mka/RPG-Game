@@ -27,14 +27,14 @@ namespace AdvancedRPG.Gameplay.Combat
             if (Health.IsDead) return;
             Health.Damage(damage.Amount);
             Damaged?.Invoke(damage);
-            if (!Health.IsDead) animator?.SetTrigger("Hit");
+            if (!Health.IsDead) animator?.SetTrigger("hit");
         }
 
         public void Restore(float current, float max) => Health.Set(current, max);
 
         private void OnDied()
         {
-            animator?.SetTrigger("Death");
+            animator?.SetTrigger("death");
             DiedView?.Invoke(this);
             if (TryGetComponent<EnemyBrain>(out var enemy)) enemy.enabled = false;
             if (destroyOnDeath) Destroy(gameObject, 2f);
