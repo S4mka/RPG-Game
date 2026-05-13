@@ -1,19 +1,129 @@
 using UnityEngine;
+using AdvancedRPG.Gameplay.Combat;
 
 namespace AdvancedRPG.Gameplay.Enemies.States
 {
-    public sealed class AttackState : IEnemyState
+    public class AttackState : IEnemyState
     {
-        private readonly EnemyBrain enemy; private readonly EnemyStateMachine machine; private float nextAttack;
-        public AttackState(EnemyBrain enemy, EnemyStateMachine machine) { this.enemy = enemy; this.machine = machine; }
-        public void Enter() { enemy.Agent.isStopped = true; nextAttack = 0f; }
+        private readonly EnemyBrain context;
+
+        public AttackState(EnemyBrain context)
+        {
+            this.context = context;
+        }
+
+        public void Enter()
+        {
+            if (context.Agent != null)
+            {
+                context.Agent.isStopped = true;
+            }
+
+            context.PlayAttackAnimation();
+        }
+
         public void Tick()
         {
-            if (enemy.HasLowHp) { machine.ChangeState(new FleeState(enemy, machine)); return; }
-            if (enemy.DistanceToPlayer > enemy.AttackDistance * 1.25f) { machine.ChangeState(new AggroState(enemy, machine)); return; }
-            enemy.transform.LookAt(new Vector3(enemy.Player.position.x, enemy.transform.position.y, enemy.Player.position.z));
-            if (Time.time >= nextAttack) { enemy.Attack(); nextAttack = Time.time + 1.5f; }
+            if (context.Target == null)
+            {
+                context.ChangeState(new IdleState(context));
+                return;
+            }
+
+            if (context.ShouldFlee())
+            {
+                context.ChangeState(new FleeState(context));
+                return;
+            }
+
+            float distance = context.DistanceToTarget();
+
+            if (distance > context.AttackDistance)
+            {
+                context.ChangeState(new AggroState(context));
+                return;
+            }
+
+            LookAtTarget();
+
+            if (!context.CanAttack())
+                return;
+
+            context.MarkAttackTime();
+            context.PlayAttackAnimation();
+
+            if (context.IsRanged)
+            {
+                RangedAttack();
+            }
+            else
+            {
+                MeleeAttack();
+            }
         }
-        public void Exit() { enemy.Agent.isStopped = false; }
+
+        public void Exit()
+        {
+            context.StopAttackAnimation();
+
+            if (context.Agent != null)
+            {
+                context.Agent.isStopped = false;
+            }
+        }
+
+        private void LookAtTarget()
+        {
+            Vector3 direction = context.Target.position - context.transform.position;
+            direction.y = 0f;
+
+            if (direction.sqrMagnitude <= 0.001f)
+                return;
+
+            Quaternion rotation = Quaternion.LookRotation(direction);
+
+            context.transform.rotation = Quaternion.Slerp(
+                context.transform.rotation,
+                rotation,
+                Time.deltaTime * 10f);
+        }
+
+        private void MeleeAttack()
+        {
+            if (context.MeleeHitbox == null)
+            {
+                Debug.LogWarning($"{context.name}: MeleeHitbox is not assigned.");
+                return;
+            }
+
+            context.MeleeHitbox.Activate(
+                context.gameObject,
+                context.Damage);
+        }
+
+        private void RangedAttack()
+        {
+            if (context.ProjectilePrefab == null)
+            {
+                Debug.LogWarning($"{context.name}: ProjectilePrefab is not assigned.");
+                return;
+            }
+
+            if (context.ProjectileSpawnPoint == null)
+            {
+                Debug.LogWarning($"{context.name}: ProjectileSpawnPoint is not assigned.");
+                return;
+            }
+
+            MagicProjectile projectile = Object.Instantiate(
+                context.ProjectilePrefab,
+                context.ProjectileSpawnPoint.position,
+                context.ProjectileSpawnPoint.rotation);
+
+            projectile.Init(
+                context.gameObject,
+                context.Damage,
+                DamageType.Magical);
+        }
     }
 }

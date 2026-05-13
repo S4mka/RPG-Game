@@ -8,7 +8,7 @@ namespace AdvancedRPG.Gameplay.Player
     public sealed class PlayerAttackController : MonoBehaviour
     {
         [Header("Damage")]
-        [SerializeField] private float physicalDamage = 25f;
+        [SerializeField] private int physicalDamage = 25;
         [SerializeField] private float magicalDamage = 20f;
         [SerializeField] private float magicCooldown = 2f;
 
@@ -90,7 +90,7 @@ namespace AdvancedRPG.Gameplay.Player
             animator?.SetTrigger("MAttack");
 
             var projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
-            projectile.Launch(gameObject, projectileSpawnPoint.forward, magicalDamage, enemyMask);
+            
         }
     }
 }

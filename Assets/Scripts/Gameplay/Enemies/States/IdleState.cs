@@ -1,15 +1,50 @@
 namespace AdvancedRPG.Gameplay.Enemies.States
 {
-    public sealed class IdleState : IEnemyState
+    public class IdleState : IEnemyState
     {
-        private readonly EnemyBrain enemy; private readonly EnemyStateMachine machine;
-        public IdleState(EnemyBrain enemy, EnemyStateMachine machine) { this.enemy = enemy; this.machine = machine; }
-        public void Enter() { enemy.Agent.isStopped = true; enemy.Animator?.SetFloat("Speed", 0f); }
+        private readonly EnemyBrain context;
+
+        public IdleState(EnemyBrain context)
+        {
+            this.context = context;
+        }
+
+        public void Enter()
+        {
+            if (context.Agent != null)
+            {
+                context.Agent.isStopped = true;
+            }
+        }
+
         public void Tick()
         {
-            if (enemy.HasLowHp) machine.ChangeState(new FleeState(enemy, machine));
-            else if (!enemy.PeacefulMode && enemy.DistanceToPlayer <= enemy.AggroDistance) machine.ChangeState(new AggroState(enemy, machine));
+            if (context.Target == null)
+                return;
+
+            if (context.ShouldFlee())
+            {
+                context.ChangeState(new FleeState(context));
+                return;
+            }
+
+            if (context.PeacefulMode)
+                return;
+
+            float distance = context.DistanceToTarget();
+
+            if (distance <= context.AggroDistance)
+            {
+                context.ChangeState(new AggroState(context));
+            }
         }
-        public void Exit() { }
+
+        public void Exit()
+        {
+            if (context.Agent != null)
+            {
+                context.Agent.isStopped = false;
+            }
+        }
     }
 }

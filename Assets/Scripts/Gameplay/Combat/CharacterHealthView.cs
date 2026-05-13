@@ -1,43 +1,79 @@
 using System;
-using AdvancedRPG.Gameplay.Enemies;
 using UnityEngine;
 
 namespace AdvancedRPG.Gameplay.Combat
 {
-    public sealed class CharacterHealthView : MonoBehaviour, IDamageable
+    public class CharacterHealthView : MonoBehaviour, IDamageable
     {
-        [SerializeField] private float maxHp = 100f;
+        private static readonly int Hit = Animator.StringToHash("hit");
+        private static readonly int Death = Animator.StringToHash("death");
+
+        [Header("Health")]
+        [SerializeField] private int maxHp = 100;
+        [SerializeField] private bool destroyOnDeath = true;
+        [SerializeField] private float destroyDelay = 2f;
+
+        [Header("Animation")]
         [SerializeField] private Animator animator;
-        [SerializeField] private bool destroyOnDeath;
 
         public IHealth Health { get; private set; }
-        public bool IsPlayer { get; private set; }
-        public event Action<CharacterHealthView> DiedView;
-        public event Action<DamageData> Damaged;
+
+        public event Action<CharacterHealthView> Died;
+
+        private bool isDead;
 
         private void Awake()
         {
             Health = new HealthModel(maxHp);
-            Health.Died += OnDied;
-            IsPlayer = CompareTag("Player");
+
+            if (animator == null)
+                animator = GetComponent<Animator>();
+        }
+
+        private void OnEnable()
+        {
+            Health.Died += HandleDeath;
+        }
+
+        private void OnDisable()
+        {
+            Health.Died -= HandleDeath;
         }
 
         public void TakeDamage(DamageData damage)
         {
-            if (Health.IsDead) return;
+            if (isDead)
+                return;
+
+            Debug.Log($"{name} took {damage.Amount} {damage.Type} damage");
+
             Health.Damage(damage.Amount);
-            Damaged?.Invoke(damage);
-            if (!Health.IsDead) animator?.SetTrigger("hit");
+
+            if (!isDead && animator != null)
+                animator.SetTrigger(Hit);
         }
 
-        public void Restore(float current, float max) => Health.Set(current, max);
-
-        private void OnDied()
+        public void SetHp(float current, float max)
         {
-            animator?.SetTrigger("death");
-            DiedView?.Invoke(this);
-            if (TryGetComponent<EnemyBrain>(out var enemy)) enemy.enabled = false;
-            if (destroyOnDeath) Destroy(gameObject, 2f);
+            Health.Set(current, max);
+        }
+
+        private void HandleDeath()
+        {
+            if (isDead)
+                return;
+
+            isDead = true;
+
+            Debug.Log($"{name} died");
+
+            if (animator != null)
+                animator.SetTrigger(Death);
+
+            Died?.Invoke(this);
+
+            if (destroyOnDeath)
+                Destroy(gameObject, destroyDelay);
         }
     }
 }

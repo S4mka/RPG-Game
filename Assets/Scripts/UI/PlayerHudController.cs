@@ -1,32 +1,101 @@
-using AdvancedRPG.Gameplay.Combat;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+#if TMP_PRESENT
+using TMPro;
+#endif
+
 namespace AdvancedRPG.UI
 {
-    public sealed class PlayerHudController : MonoBehaviour
+    using AdvancedRPG.Gameplay.Combat;
+
+    public class PlayerHudController : MonoBehaviour
     {
-        [SerializeField] private CharacterHealthView player;
-        [SerializeField] private Image hpFill;
+        [Header("Player")]
+        [SerializeField] private CharacterHealthView playerHealthView;
+
+        [Header("HP UI")]
+        [SerializeField] private Slider hpSlider;
+
+#if TMP_PRESENT
         [SerializeField] private TMP_Text hpText;
+#else
+        [SerializeField] private Text hpText;
+#endif
+
+        [Header("Game Over UI")]
         [SerializeField] private GameObject gameOverPanel;
+
+        private void Awake()
+        {
+            if (gameOverPanel != null)
+                gameOverPanel.SetActive(false);
+
+            if (playerHealthView == null)
+            {
+                GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+                if (player != null)
+                    playerHealthView = player.GetComponent<CharacterHealthView>();
+            }
+        }
+
         private void OnEnable()
         {
-            player.Health.Changed += OnHpChanged;
-            player.Health.Died += OnDied;
-            OnHpChanged(player.Health.Current, player.Health.Max);
+            if (playerHealthView == null)
+            {
+                Debug.LogError($"{nameof(PlayerHudController)}: Player Health View не назначен.", this);
+                enabled = false;
+                return;
+            }
+
+            if (playerHealthView.Health == null)
+            {
+                Debug.LogError($"{nameof(PlayerHudController)}: у Player Health View не создан HealthModel.", this);
+                enabled = false;
+                return;
+            }
+
+            if (hpSlider == null)
+            {
+                Debug.LogError($"{nameof(PlayerHudController)}: HP Slider не назначен.", this);
+                enabled = false;
+                return;
+            }
+
+            playerHealthView.Health.Changed += OnHealthChanged;
+            playerHealthView.Health.Died += OnPlayerDied;
+
+            OnHealthChanged(
+                playerHealthView.Health.Current,
+                playerHealthView.Health.MaxH);
         }
+
         private void OnDisable()
         {
-            player.Health.Changed -= OnHpChanged;
-            player.Health.Died -= OnDied;
+            if (playerHealthView == null || playerHealthView.Health == null)
+                return;
+
+            playerHealthView.Health.Changed -= OnHealthChanged;
+            playerHealthView.Health.Died -= OnPlayerDied;
         }
-        private void OnHpChanged(float current, float max)
+
+        private void OnHealthChanged(float currentHp, float maxHp)
         {
-            hpFill.fillAmount = current / max;
-            hpText.text = $"HP: {current:0}/{max:0}";
+            hpSlider.minValue = 0;
+            hpSlider.maxValue = maxHp;
+            hpSlider.value = currentHp;
+
+            if (hpText != null)
+                hpText.text = $"HP: {currentHp} / {maxHp}";
         }
-        private void OnDied() { gameOverPanel.SetActive(true); Time.timeScale = 0f; Cursor.lockState = CursorLockMode.None; Cursor.visible = true; }
+
+        private void OnPlayerDied()
+        {
+            if (gameOverPanel != null)
+                gameOverPanel.SetActive(true);
+
+            Time.timeScale = 0f;
+        }
     }
 }

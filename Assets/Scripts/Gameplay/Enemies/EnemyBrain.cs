@@ -1,58 +1,197 @@
-using AdvancedRPG.Gameplay.Combat;
-using AdvancedRPG.Gameplay.Enemies.States;
 using UnityEngine;
 using UnityEngine.AI;
+using AdvancedRPG.Gameplay.Combat;
+using AdvancedRPG.Gameplay.Enemies.States;
 
 namespace AdvancedRPG.Gameplay.Enemies
 {
-    [RequireComponent(typeof(NavMeshAgent), typeof(CharacterHealthView))]
-    public sealed class EnemyBrain : MonoBehaviour
+    [RequireComponent(typeof(NavMeshAgent))]
+    [RequireComponent(typeof(CharacterHealthView))]
+    public class EnemyBrain : MonoBehaviour
     {
-        public Transform Player { get; private set; }
-        public NavMeshAgent Agent { get; private set; }
-        public CharacterHealthView Health { get; private set; }
-        public Animator Animator;
-        public float AggroDistance = 10f;
-        public float AttackDistance = 2f;
-        public float LowHpPercent = 0.25f;
-        public bool PeacefulMode;
-        public MeleeHitbox MeleeHitbox;
-        public MagicProjectile ProjectilePrefab;
-        public Transform ProjectilePoint;
-        public LayerMask PlayerMask;
-        public float Damage = 15f;
-        public bool IsRanged;
+        private static readonly int IsRun = Animator.StringToHash("isRun");
+        private static readonly int IsAttack = Animator.StringToHash("isAttack");
+        private static readonly int Attack = Animator.StringToHash("attack");
+
+        [Header("Target")]
+        [SerializeField] private Transform target;
+
+        [Header("Components")]
+        [SerializeField] private Animator animator;
+        [SerializeField] private NavMeshAgent agent;
+        [SerializeField] private CharacterHealthView healthView;
+        [SerializeField] private MeleeHitbox meleeHitbox;
+        [SerializeField] private Transform projectileSpawnPoint;
+        [SerializeField] private MagicProjectile projectilePrefab;
+
+        [Header("Enemy Settings")]
+        [SerializeField] private bool isRanged;
+        [SerializeField] private bool peacefulMode;
+
+        [Header("Distances")]
+        [SerializeField] private float aggroDistance = 10f;
+        [SerializeField] private float attackDistance = 2f;
+        [SerializeField] private float rangedAttackDistance = 8f;
+        [SerializeField] private float fleeHpPercent = 0.25f;
+
+        [Header("Attack")]
+        [SerializeField] private int damage = 10;
+        [SerializeField] private float attackCooldown = 1.5f;
 
         private EnemyStateMachine stateMachine;
+        private float lastAttackTime;
+
+        public Transform Target => target;
+        public Animator Animator => animator;
+        public NavMeshAgent Agent => agent;
+        public CharacterHealthView HealthView => healthView;
+        public MeleeHitbox MeleeHitbox => meleeHitbox;
+        public MagicProjectile ProjectilePrefab => projectilePrefab;
+        public Transform ProjectileSpawnPoint => projectileSpawnPoint;
+
+        public bool IsRanged => isRanged;
+        public bool PeacefulMode => peacefulMode;
+        public int Damage => damage;
+        public float AggroDistance => aggroDistance;
+        public float AttackDistance => isRanged ? rangedAttackDistance : attackDistance;
+        public float AttackCooldown => attackCooldown;
 
         private void Awake()
         {
-            Agent = GetComponent<NavMeshAgent>();
-            Health = GetComponent<CharacterHealthView>();
+            if (agent == null)
+                agent = GetComponent<NavMeshAgent>();
+
+            if (healthView == null)
+                healthView = GetComponent<CharacterHealthView>();
+
+            if (animator == null)
+                animator = GetComponent<Animator>();
+
             stateMachine = new EnemyStateMachine();
-            Health.DiedView += OnDied;
-        }
 
-        public void Construct(Transform player)
-        {
-            Player = player;
-            stateMachine.ChangeState(new IdleState(this, stateMachine));
-        }
-
-        private void Update() => stateMachine.Tick();
-
-        public float DistanceToPlayer => Player == null ? float.MaxValue : Vector3.Distance(transform.position, Player.position);
-        public bool HasLowHp => Health.Health.Current / Health.Health.Max <= LowHpPercent;
-        public void Attack()
-        {
-            Animator?.SetTrigger("Attack");
-            if (IsRanged && ProjectilePrefab != null && ProjectilePoint != null)
+            if (target == null)
             {
-                var p = Instantiate(ProjectilePrefab, ProjectilePoint.position, ProjectilePoint.rotation);
-                p.Launch(gameObject, (Player.position + Vector3.up - ProjectilePoint.position), Damage, PlayerMask);
+                GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+                if (player != null)
+                    target = player.transform;
             }
-            else MeleeHitbox?.Activate(gameObject, Damage);
         }
-        private void OnDied(CharacterHealthView _) { FindObjectOfType<MobKillCounter>()?.AddKill(); }
+
+        private void OnEnable()
+        {
+            if (healthView != null && healthView.Health != null)
+            {
+                healthView.Health.Died += OnDied;
+            }
+        }
+
+        private void Start()
+        {
+            stateMachine.ChangeState(new IdleState(this));
+        }
+
+        private void Update()
+        {
+            if (target == null)
+            {
+                GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+                if (player != null)
+                    target = player.transform;
+            }
+
+            stateMachine.Tick();
+
+            UpdateMoveAnimation();
+        }
+
+        private void OnDisable()
+        {
+            if (healthView != null && healthView.Health != null)
+            {
+                healthView.Health.Died -= OnDied;
+            }
+        }
+
+        public void Construct(Transform newTarget)
+        {
+            target = newTarget;
+        }
+
+        public float DistanceToTarget()
+        {
+            if (target == null)
+                return float.MaxValue;
+
+            return Vector3.Distance(transform.position, target.position);
+        }
+
+        public bool CanAttack()
+        {
+            return Time.time >= lastAttackTime + attackCooldown;
+        }
+
+        public void MarkAttackTime()
+        {
+            lastAttackTime = Time.time;
+        }
+
+        public bool ShouldFlee()
+        {
+            if (healthView == null || healthView.Health == null)
+                return false;
+
+            float hpPercent =
+                (float)healthView.Health.Current / healthView.Health.Max;
+
+            return hpPercent <= fleeHpPercent;
+        }
+
+        public void ChangeState(IEnemyState state)
+        {
+            stateMachine.ChangeState(state);
+        }
+
+        public void PlayAttackAnimation()
+        {
+            if (animator == null)
+                return;
+
+            animator.SetBool(IsAttack, true);
+            animator.SetTrigger(Attack);
+        }
+
+        public void StopAttackAnimation()
+        {
+            if (animator == null)
+                return;
+
+            animator.SetBool(IsAttack, false);
+        }
+
+        private void UpdateMoveAnimation()
+        {
+            if (animator == null || agent == null)
+                return;
+
+            bool isMoving = agent.velocity.sqrMagnitude > 0.05f;
+            animator.SetBool(IsRun, isMoving);
+        }
+
+        private void OnDied()
+        {
+            if (agent != null)
+            {
+                agent.isStopped = true;
+                agent.enabled = false;
+            }
+
+            if (animator != null)
+            {
+                animator.SetBool(IsRun, false);
+                animator.SetBool(IsAttack, false);
+            }
+        }
     }
 }

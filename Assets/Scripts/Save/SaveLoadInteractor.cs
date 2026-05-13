@@ -21,7 +21,7 @@ namespace AdvancedRPG.Save
         {
             if (!repository.TryLoad(out var data)) return false;
             player.transform.position = new Vector3(data.playerX, data.playerY, data.playerZ);
-            player.Restore(data.playerHp, data.playerMaxHp);
+            player.SetHp(data.playerHp, data.playerMaxHp);
             if (killCounter != null) killCounter.SetCount(data.killedMobs);
             var mobs = Object.FindObjectsOfType<SavableMob>().ToDictionary(m => m.Id, m => m);
             foreach (var savedMob in data.mobs) if (mobs.TryGetValue(savedMob.id, out var mob)) mob.Restore(savedMob);

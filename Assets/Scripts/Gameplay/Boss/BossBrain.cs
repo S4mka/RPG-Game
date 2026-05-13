@@ -15,7 +15,7 @@ namespace AdvancedRPG.Gameplay.Boss
         public Animator Animator;
         public float AggroDistance = 15f;
         public float AttackDistance = 3f;
-        public float Damage = 30f;
+        public int Damage = 30;
         public MeleeHitbox MeleeHitbox;
         public MagicProjectile StrongProjectilePrefab;
         public Transform ProjectilePoint;
@@ -26,7 +26,7 @@ namespace AdvancedRPG.Gameplay.Boss
         private void Awake()
         {
             Agent = GetComponent<NavMeshAgent>(); Health = GetComponent<CharacterHealthView>(); machine = new EnemyStateMachine();
-            Health.Damaged += _ => WasHit = true;
+          //  Health.Damage += _ => WasHit = true;
         }
         private void Start()
         {
@@ -41,7 +41,7 @@ namespace AdvancedRPG.Gameplay.Boss
             Animator?.SetTrigger("StrongAttack");
             if (StrongProjectilePrefab == null) return;
             var p = Instantiate(StrongProjectilePrefab, ProjectilePoint.position, ProjectilePoint.rotation);
-            p.Launch(gameObject, (Player.position + Vector3.up - ProjectilePoint.position), Damage * 1.7f, PlayerMask);
+           // p.Launch(gameObject, (Player.position + Vector3.up - ProjectilePoint.position), Damage * 1.7f, PlayerMask);
         }
     }
 }

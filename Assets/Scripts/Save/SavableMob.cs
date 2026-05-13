@@ -19,7 +19,7 @@ namespace AdvancedRPG.Save
         public void Restore(MobSaveData data)
         {
             transform.position = new Vector3(data.x, data.y, data.z);
-            healthView.Restore(data.hp, data.maxHp);
+            healthView.SetHp(data.hp, data.maxHp);
             gameObject.SetActive(!data.dead);
         }
     }

@@ -1,16 +1,52 @@
 namespace AdvancedRPG.Gameplay.Enemies.States
 {
-    public sealed class AggroState : IEnemyState
+    public class AggroState : IEnemyState
     {
-        private readonly EnemyBrain enemy; private readonly EnemyStateMachine machine;
-        public AggroState(EnemyBrain enemy, EnemyStateMachine machine) { this.enemy = enemy; this.machine = machine; }
-        public void Enter() { enemy.Agent.isStopped = false; }
+        private readonly EnemyBrain context;
+
+        public AggroState(EnemyBrain context)
+        {
+            this.context = context;
+        }
+
+        public void Enter()
+        {
+            if (context.Agent != null)
+            {
+                context.Agent.isStopped = false;
+            }
+        }
+
         public void Tick()
         {
-            if (enemy.HasLowHp) { machine.ChangeState(new FleeState(enemy, machine)); return; }
-            if (enemy.DistanceToPlayer <= enemy.AttackDistance) { machine.ChangeState(new AttackState(enemy, machine)); return; }
-            enemy.Agent.SetDestination(enemy.Player.position); enemy.Animator?.SetFloat("Speed", enemy.Agent.velocity.magnitude);
+            if (context.Target == null)
+            {
+                context.ChangeState(new IdleState(context));
+                return;
+            }
+
+            if (context.ShouldFlee())
+            {
+                context.ChangeState(new FleeState(context));
+                return;
+            }
+
+            float distance = context.DistanceToTarget();
+
+            if (distance <= context.AttackDistance)
+            {
+                context.ChangeState(new AttackState(context));
+                return;
+            }
+
+            if (context.Agent != null)
+            {
+                context.Agent.SetDestination(context.Target.position);
+            }
         }
-        public void Exit() { }
+
+        public void Exit()
+        {
+        }
     }
 }

@@ -1,36 +1,59 @@
-using AdvancedRPG.Core;
 using UnityEngine;
 
 namespace AdvancedRPG.Gameplay.Combat
 {
-    public sealed class MagicProjectile : MonoBehaviour
+    [RequireComponent(typeof(Collider))]
+    public class MagicProjectile : MonoBehaviour
     {
         [SerializeField] private float speed = 12f;
         [SerializeField] private float lifeTime = 5f;
-        [SerializeField] private LayerMask targetMask;
 
-        private float damage;
         private GameObject owner;
-        private Vector3 direction;
+        private int damage;
+        private DamageType damageType;
+        private bool initialized;
 
-        public void Launch(GameObject projectileOwner, Vector3 dir, float amount, LayerMask mask)
+        public void Init(GameObject newOwner, int newDamage, DamageType newDamageType)
         {
-            owner = projectileOwner;
-            direction = dir.normalized;
-            damage = amount;
-            targetMask = mask;
+            owner = newOwner;
+            damage = newDamage;
+            damageType = newDamageType;
+            initialized = true;
+
             Destroy(gameObject, lifeTime);
         }
 
-        private void Update() => transform.position += direction * speed * Time.deltaTime;
+        private void Update()
+        {
+            transform.position += transform.forward * speed * Time.deltaTime;
+        }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject == owner) return;
-            if (((1 << other.gameObject.layer) & targetMask) == 0) return;
-            if (other.TryGetComponent<IDamageable>(out var target))
-                ServiceLocator.Get<IDamageService>().Apply(target, new DamageData(damage, DamageType.Magical, owner));
-            Destroy(gameObject);
+            if (!initialized)
+                return;
+
+            if (owner != null && other.transform.root.gameObject == owner)
+                return;
+
+            IDamageable damageable = other.GetComponentInParent<IDamageable>();
+
+            if (damageable != null)
+            {
+                damageable.TakeDamage(
+                    new DamageData(
+                        damage,
+                        damageType,
+                        owner));
+
+                Destroy(gameObject);
+                return;
+            }
+
+            if (!other.isTrigger)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }
