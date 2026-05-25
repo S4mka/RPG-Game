@@ -68,7 +68,7 @@ namespace AdvancedRPG.UI
 
             OnHealthChanged(
                 playerHealthView.Health.Current,
-                playerHealthView.Health.MaxH);
+                playerHealthView.Health.Max);
         }
 
         private void OnDisable()
