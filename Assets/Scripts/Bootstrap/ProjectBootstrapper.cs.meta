@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 663f96388e226b04691ecc16a57193a6
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - musicSource: {instanceID: 0}
+  - victoryClip: {fileID: 8300000, guid: 50b935df232dd374981c8d75e03e4893, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
