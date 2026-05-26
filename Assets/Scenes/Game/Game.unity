@@ -1510,6 +1510,46 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3371956065218060917, guid: a7453cde4b8d357428d724a16d17ba27, type: 3}
   m_PrefabInstance: {fileID: 175620929}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &176993503 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1051571768989249988, guid: 3e556281c1ce52c4e87e74a1e8542add, type: 3}
+  m_PrefabInstance: {fileID: 2071519838}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &176993504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 176993503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9887c08b381380c4ba3951f2e8599ec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AdvancedRPG.Gameplay.Combat.MeleeHitbox
+  hitboxCollider: {fileID: 176993505}
+--- !u!64 &176993505
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 176993503}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 3236720986300101758, guid: 3e556281c1ce52c4e87e74a1e8542add, type: 3}
 --- !u!1 &182483600
 GameObject:
   m_ObjectHideFlags: 0
@@ -21435,6 +21475,18 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3e556281c1ce52c4e87e74a1e8542add, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2071519840}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3e556281c1ce52c4e87e74a1e8542add, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2071519845}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3e556281c1ce52c4e87e74a1e8542add, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2071519844}
+    - targetCorrespondingSourceObject: {fileID: 1051571768989249988, guid: 3e556281c1ce52c4e87e74a1e8542add, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 176993505}
+    - targetCorrespondingSourceObject: {fileID: 1051571768989249988, guid: 3e556281c1ce52c4e87e74a1e8542add, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 176993504}
   m_SourcePrefab: {fileID: 100100000, guid: 3e556281c1ce52c4e87e74a1e8542add, type: 3}
 --- !u!1 &2071519839 stripped
 GameObject:
@@ -21535,6 +21587,45 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &2071519844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2071519839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78ed3430b87b56a43b84bd586063dd6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AdvancedRPG.Gameplay.Boss.BossBrain
+  Player: {fileID: 663184204}
+  Animator: {fileID: 2071519840}
+  AggroDistance: 15
+  AttackDistance: 3
+  Damage: 30
+  MeleeHitbox: {fileID: 176993504}
+  StrongProjectilePrefab: {fileID: 0}
+  ProjectilePoint: {fileID: 0}
+  PlayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+--- !u!114 &2071519845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2071519839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91ad301ce3763674fbd443cf17bf0181, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AdvancedRPG.Gameplay.Combat.CharacterHealthView
+  maxHp: 100
+  destroyOnDeath: 1
+  destroyDelay: 2
+  animator: {fileID: 2071519840}
 --- !u!1001 &2082437858
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22131,7 +22222,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdvancedRPG.Gameplay.Combat.CharacterHealthView
   maxHp: 100
-  destroyOnDeath: 0
+  destroyOnDeath: 1
   destroyDelay: 2
   animator: {fileID: 2129361318}
 --- !u!95 &2129361318
