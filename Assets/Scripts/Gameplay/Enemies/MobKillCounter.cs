@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using AdvancedRPG.Audio;
 using AdvancedRPG.Core;
-using AdvancedRPG.Gameplay.Boss;
 using AdvancedRPG.Gameplay.Combat;
 using UnityEngine;
 
@@ -10,121 +9,99 @@ namespace AdvancedRPG.Gameplay.Enemies
 {
     public sealed class MobKillCounter : MonoBehaviour
     {
-        [Header("Lab 7 Events")]
         [SerializeField] private GameObject bossPrefab;
         [SerializeField] private Transform bossSpawnPoint;
         [SerializeField] private int killsToSpawnBoss = 3;
         [SerializeField] private int killsToPlayVictory = 5;
 
-        [Header("Auto Register")]
-        [SerializeField] private bool autoRegisterOnStart = true;
-        [SerializeField] private bool ignorePlayer = true;
-
-        private readonly HashSet<CharacterHealthView> registered = new HashSet<CharacterHealthView>();
+        private readonly HashSet<CharacterHealthView> trackedEnemies = new HashSet<CharacterHealthView>();
+        private readonly HashSet<CharacterHealthView> countedEnemies = new HashSet<CharacterHealthView>();
         private bool bossSpawned;
         private bool victoryPlayed;
 
         public int Count { get; private set; }
         public event Action<int> Changed;
 
+        private void OnEnable()
+        {
+            TrackSceneEnemies();
+        }
+
         private void Start()
         {
-            if (autoRegisterOnStart)
-                RegisterSceneMobs();
-
-            Changed?.Invoke(Count);
+            TrackSceneEnemies();
+            TrySpawnBoss();
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
-            foreach (CharacterHealthView healthView in registered)
-            {
-                if (healthView != null)
-                    healthView.Died -= OnCharacterDied;
-            }
+            foreach (CharacterHealthView enemyHealth in trackedEnemies)
+                enemyHealth.Died -= OnEnemyDied;
 
-            registered.Clear();
-        }
-
-        public void RegisterSceneMobs()
-        {
-            CharacterHealthView[] healthViews = FindObjectsOfType<CharacterHealthView>(true);
-            foreach (CharacterHealthView healthView in healthViews)
-                Register(healthView);
-        }
-
-        public void Register(CharacterHealthView healthView)
-        {
-            if (healthView == null)
-                return;
-
-            if (ignorePlayer && healthView.CompareTag("Player"))
-                return;
-
-            if (healthView.GetComponent<BossBrain>() != null)
-                return;
-
-            if (!registered.Add(healthView))
-                return;
-
-            healthView.Died += OnCharacterDied;
+            trackedEnemies.Clear();
         }
 
         public void AddKill()
         {
             Count++;
             Changed?.Invoke(Count);
-            ProcessMilestones();
+            TrySpawnBoss();
+            TryPlayVictory();
         }
 
         public void SetCount(int count)
         {
-            Count = Mathf.Max(0, count);
+            Count = count;
             Changed?.Invoke(Count);
-            ProcessMilestones();
+            TrySpawnBoss();
+            TryPlayVictory();
         }
 
-        private void OnCharacterDied(CharacterHealthView deadCharacter)
+        public void RegisterEnemy(EnemyBrain enemy)
         {
-            if (deadCharacter != null)
-                deadCharacter.Died -= OnCharacterDied;
+            if (enemy == null || enemy.HealthView == null || trackedEnemies.Contains(enemy.HealthView))
+                return;
 
-            registered.Remove(deadCharacter);
+            trackedEnemies.Add(enemy.HealthView);
+            enemy.HealthView.Died += OnEnemyDied;
+        }
+
+        private void TrackSceneEnemies()
+        {
+            foreach (EnemyBrain enemy in FindObjectsOfType<EnemyBrain>())
+                RegisterEnemy(enemy);
+        }
+
+        private void OnEnemyDied(CharacterHealthView enemyHealth)
+        {
+            if (!countedEnemies.Add(enemyHealth))
+                return;
+
             AddKill();
         }
 
-        private void ProcessMilestones()
+        private void TrySpawnBoss()
         {
-            if (!bossSpawned && Count >= killsToSpawnBoss)
-            {
-                bossSpawned = true;
-                SpawnBoss();
-            }
-
-            if (!victoryPlayed && Count >= killsToPlayVictory)
-            {
-                victoryPlayed = true;
-                PlayVictoryMusic();
-            }
-        }
-
-        private void SpawnBoss()
-        {
-            if (bossPrefab == null)
+            if (bossSpawned || Count < killsToSpawnBoss || bossPrefab == null)
                 return;
 
-            if (FindObjectOfType<BossBrain>() != null)
-                return;
+            Vector3 spawnPosition = bossSpawnPoint != null ? bossSpawnPoint.position : transform.position;
+            Quaternion spawnRotation = bossSpawnPoint != null ? bossSpawnPoint.rotation : transform.rotation;
 
-            Vector3 position = bossSpawnPoint == null ? transform.position : bossSpawnPoint.position;
-            Quaternion rotation = bossSpawnPoint == null ? Quaternion.identity : bossSpawnPoint.rotation;
-            Instantiate(bossPrefab, position, rotation);
+            Instantiate(bossPrefab, spawnPosition, spawnRotation);
+            bossSpawned = true;
         }
 
-        private void PlayVictoryMusic()
+        private void TryPlayVictory()
         {
+            if (victoryPlayed || Count < killsToPlayVictory)
+                return;
+
             if (ServiceLocator.TryGet<IAudioService>(out var audio))
+            {
                 audio.PlayVictory();
+                victoryPlayed = true;
+            }
         }
     }
 }

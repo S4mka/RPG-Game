@@ -14,8 +14,7 @@ namespace AdvancedRPG.Gameplay.Enemies.States
 
         public void Enter()
         {
-            if (context.Agent != null)
-                context.Agent.isStopped = true;
+            context.StopAgent();
 
             context.PlayAttackAnimation();
         }
@@ -59,8 +58,7 @@ namespace AdvancedRPG.Gameplay.Enemies.States
         {
             context.StopAttackAnimation();
 
-            if (context.Agent != null && context.Agent.enabled)
-                context.Agent.isStopped = false;
+            context.ResumeAgent();
         }
 
         private void LookAtTarget()

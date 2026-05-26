@@ -11,10 +11,7 @@ namespace AdvancedRPG.Gameplay.Enemies.States
 
         public void Enter()
         {
-            if (context.Agent != null)
-            {
-                context.Agent.isStopped = false;
-            }
+            context.ResumeAgent();
         }
 
         public void Tick()
@@ -39,10 +36,8 @@ namespace AdvancedRPG.Gameplay.Enemies.States
                 return;
             }
 
-            if (context.Agent != null)
-            {
-                context.Agent.SetDestination(context.Target.position);
-            }
+            if (!context.TrySetDestination(context.Target.position))
+                context.ChangeState(new IdleState(context));
         }
 
         public void Exit()

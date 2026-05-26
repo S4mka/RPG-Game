@@ -61,8 +61,7 @@ namespace AdvancedRPG.Gameplay.Spawning
                 if (weapon != null)
                     slot.SetWeapon(weapon);
 
-                if (killCounter != null)
-                    killCounter.Register(enemy.HealthView);
+                killCounter?.RegisterEnemy(enemy);
             }
         }
 

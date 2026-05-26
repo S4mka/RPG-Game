@@ -58,6 +58,8 @@ namespace AdvancedRPG.Gameplay.Enemies
         public float AggroDistance => aggroDistance;
         public float AttackDistance => isRanged ? rangedAttackDistance : attackDistance;
         public float AttackCooldown => attackCooldown;
+        public bool IsDead => healthView != null && healthView.Health != null && healthView.Health.IsDead;
+        public bool HasActiveAgent => agent != null && agent.enabled && agent.isOnNavMesh;
 
         private void Awake()
         {
@@ -87,6 +89,9 @@ namespace AdvancedRPG.Gameplay.Enemies
 
         private void Update()
         {
+            if (IsDead)
+                return;
+
             FindTargetIfNeeded();
             stateMachine.Tick();
             UpdateMoveAnimation();
@@ -143,6 +148,29 @@ namespace AdvancedRPG.Gameplay.Enemies
             lastAttackTime = Time.time;
         }
 
+        public void ResumeAgent()
+        {
+            if (HasActiveAgent)
+                agent.isStopped = false;
+        }
+
+        public void StopAgent()
+        {
+            if (HasActiveAgent)
+                agent.isStopped = true;
+        }
+
+        public bool TrySetDestination(Vector3 destination)
+        {
+            if (!HasActiveAgent)
+                return false;
+
+            if (NavMesh.SamplePosition(destination, out NavMeshHit hit, 4f, NavMesh.AllAreas))
+                destination = hit.position;
+
+            return agent.SetDestination(destination);
+        }
+
         public bool ShouldFlee()
         {
             if (healthView == null || healthView.Health == null)
@@ -186,7 +214,7 @@ namespace AdvancedRPG.Gameplay.Enemies
 
         private void UpdateMoveAnimation()
         {
-            if (animator == null || agent == null || !agent.enabled)
+            if (animator == null || !HasActiveAgent)
                 return;
 
             bool isMoving = agent.velocity.sqrMagnitude > 0.05f;
@@ -195,11 +223,10 @@ namespace AdvancedRPG.Gameplay.Enemies
 
         private void OnDied()
         {
+            StopAgent();
+
             if (agent != null)
-            {
-                agent.isStopped = true;
                 agent.enabled = false;
-            }
 
             if (animator != null)
             {

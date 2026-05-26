@@ -13,15 +13,12 @@ namespace AdvancedRPG.Gameplay.Enemies.States
 
         public void Enter()
         {
-            if (context.Agent != null)
-            {
-                context.Agent.isStopped = false;
-            }
+            context.ResumeAgent();
         }
 
         public void Tick()
         {
-            if (context.Target == null || context.Agent == null)
+            if (context.Target == null || !context.HasActiveAgent)
             {
                 context.ChangeState(new IdleState(context));
                 return;
@@ -33,7 +30,8 @@ namespace AdvancedRPG.Gameplay.Enemies.States
             Vector3 fleePoint =
                 context.transform.position + direction.normalized * 6f;
 
-            context.Agent.SetDestination(fleePoint);
+            if (!context.TrySetDestination(fleePoint))
+                context.ChangeState(new IdleState(context));
         }
 
         public void Exit()

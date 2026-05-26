@@ -11,10 +11,7 @@ namespace AdvancedRPG.Gameplay.Enemies.States
 
         public void Enter()
         {
-            if (context.Agent != null)
-            {
-                context.Agent.isStopped = true;
-            }
+            context.StopAgent();
         }
 
         public void Tick()
@@ -41,10 +38,7 @@ namespace AdvancedRPG.Gameplay.Enemies.States
 
         public void Exit()
         {
-            if (context.Agent != null)
-            {
-                context.Agent.isStopped = false;
-            }
+            context.ResumeAgent();
         }
     }
 }
