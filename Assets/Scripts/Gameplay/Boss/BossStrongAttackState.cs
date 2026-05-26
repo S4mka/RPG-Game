@@ -17,8 +17,7 @@ namespace AdvancedRPG.Gameplay.Boss
 
         public void Enter()
         {
-            if (boss.Agent != null)
-                boss.Agent.isStopped = true;
+            boss.StopAgent();
 
             boss.StrongAttack();
             endTime = Time.time + boss.AttackDelay;

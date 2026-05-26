@@ -49,6 +49,7 @@ namespace AdvancedRPG.Gameplay.Boss
         public float AttackDelay => GetCurrentAttackDelay();
         public float DistanceToPlayer => Player == null ? float.MaxValue : Vector3.Distance(transform.position, Player.position);
         public bool CanAggro => !peacefulUntilHit || WasHit || DistanceToPlayer <= AggroDistance;
+        public bool HasActiveAgent => Agent != null && Agent.enabled && Agent.isOnNavMesh;
 
         private EnemyStateMachine machine;
         private float previousHealth;
@@ -142,6 +143,29 @@ namespace AdvancedRPG.Gameplay.Boss
             WasHit = true;
         }
 
+        public void ResumeAgent()
+        {
+            if (HasActiveAgent)
+                Agent.isStopped = false;
+        }
+
+        public void StopAgent()
+        {
+            if (HasActiveAgent)
+                Agent.isStopped = true;
+        }
+
+        public bool TrySetDestination(Vector3 destination)
+        {
+            if (!HasActiveAgent)
+                return false;
+
+            if (NavMesh.SamplePosition(destination, out NavMeshHit hit, 4f, NavMesh.AllAreas))
+                destination = hit.position;
+
+            return Agent.SetDestination(destination);
+        }
+
         private void ChooseLoadout()
         {
             if (chooseRandomLoadoutOnStart && possibleLoadouts != null && possibleLoadouts.Length > 0)
@@ -212,16 +236,15 @@ namespace AdvancedRPG.Gameplay.Boss
 
         private void OnDied()
         {
+            StopAgent();
+
             if (Agent != null)
-            {
-                Agent.isStopped = true;
                 Agent.enabled = false;
-            }
         }
 
         private void UpdateMoveAnimation()
         {
-            if (Animator == null || Agent == null || !Agent.enabled)
+            if (Animator == null || !HasActiveAgent)
                 return;
 
             Animator.SetBool(IsRun, Agent.velocity.sqrMagnitude > 0.05f);

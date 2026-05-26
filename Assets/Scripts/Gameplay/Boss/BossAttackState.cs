@@ -18,8 +18,7 @@ namespace AdvancedRPG.Gameplay.Boss
 
         public void Enter()
         {
-            if (boss.Agent != null)
-                boss.Agent.isStopped = true;
+            boss.StopAgent();
 
             nextAttack = 0f;
         }
@@ -55,8 +54,7 @@ namespace AdvancedRPG.Gameplay.Boss
 
         public void Exit()
         {
-            if (boss.Agent != null && boss.Agent.enabled)
-                boss.Agent.isStopped = false;
+            boss.ResumeAgent();
         }
 
         private void LookAtPlayer()

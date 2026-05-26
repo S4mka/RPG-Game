@@ -15,8 +15,7 @@ namespace AdvancedRPG.Gameplay.Boss
 
         public void Enter()
         {
-            if (boss.Agent != null)
-                boss.Agent.isStopped = false;
+            boss.ResumeAgent();
         }
 
         public void Tick()
@@ -33,8 +32,7 @@ namespace AdvancedRPG.Gameplay.Boss
                 return;
             }
 
-            if (boss.Agent != null && boss.Agent.enabled)
-                boss.Agent.SetDestination(boss.Player.position);
+            boss.TrySetDestination(boss.Player.position);
         }
 
         public void Exit() { }

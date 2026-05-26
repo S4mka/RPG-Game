@@ -15,8 +15,7 @@ namespace AdvancedRPG.Gameplay.Boss
 
         public void Enter()
         {
-            if (boss.Agent != null)
-                boss.Agent.isStopped = true;
+            boss.StopAgent();
         }
 
         public void Tick()
