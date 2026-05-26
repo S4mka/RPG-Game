@@ -19,6 +19,7 @@ namespace AdvancedRPG.Gameplay.Combat
         public IHealth Health { get; private set; }
 
         public event Action<CharacterHealthView> Died;
+        public event Action<CharacterHealthView, DamageData> Damaged;
 
         private bool isDead;
 
@@ -48,6 +49,7 @@ namespace AdvancedRPG.Gameplay.Combat
             Debug.Log($"{name} took {damage.Amount} {damage.Type} damage");
 
             Health.Damage(damage.Amount);
+            Damaged?.Invoke(this, damage);
 
             if (!isDead && animator != null)
                 animator.SetTrigger(Hit);

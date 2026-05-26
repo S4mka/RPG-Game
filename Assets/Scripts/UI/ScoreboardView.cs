@@ -8,8 +8,33 @@ namespace AdvancedRPG.UI
     {
         [SerializeField] private MobKillCounter counter;
         [SerializeField] private TMP_Text text;
-        private void OnEnable() { counter.Changed += UpdateText; UpdateText(counter.Count); }
-        private void OnDisable() { counter.Changed -= UpdateText; }
-        private void UpdateText(int count) => text.text = $"Score: {count}";
+        [SerializeField] private string format = "Score: {0}";
+
+        private void Awake()
+        {
+            if (counter == null)
+                counter = FindObjectOfType<MobKillCounter>();
+        }
+
+        private void OnEnable()
+        {
+            if (counter == null || text == null)
+                return;
+
+            counter.Changed += UpdateText;
+            UpdateText(counter.Count);
+        }
+
+        private void OnDisable()
+        {
+            if (counter != null)
+                counter.Changed -= UpdateText;
+        }
+
+        private void UpdateText(int count)
+        {
+            if (text != null)
+                text.text = string.Format(format, count);
+        }
     }
 }

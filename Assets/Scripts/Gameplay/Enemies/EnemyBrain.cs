@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using AdvancedRPG.Gameplay.Combat;
 using AdvancedRPG.Gameplay.Enemies.States;
+using AdvancedRPG.Gameplay.Weapons;
 
 namespace AdvancedRPG.Gameplay.Enemies
 {
@@ -36,6 +37,7 @@ namespace AdvancedRPG.Gameplay.Enemies
 
         [Header("Attack")]
         [SerializeField] private int damage = 10;
+        [SerializeField] private DamageType damageType = DamageType.Physical;
         [SerializeField] private float attackCooldown = 1.5f;
 
         private EnemyStateMachine stateMachine;
@@ -52,6 +54,7 @@ namespace AdvancedRPG.Gameplay.Enemies
         public bool IsRanged => isRanged;
         public bool PeacefulMode => peacefulMode;
         public int Damage => damage;
+        public DamageType DamageType => damageType;
         public float AggroDistance => aggroDistance;
         public float AttackDistance => isRanged ? rangedAttackDistance : attackDistance;
         public float AttackCooldown => attackCooldown;
@@ -68,22 +71,13 @@ namespace AdvancedRPG.Gameplay.Enemies
                 animator = GetComponent<Animator>();
 
             stateMachine = new EnemyStateMachine();
-
-            if (target == null)
-            {
-                GameObject player = GameObject.FindGameObjectWithTag("Player");
-
-                if (player != null)
-                    target = player.transform;
-            }
+            FindTargetIfNeeded();
         }
 
         private void OnEnable()
         {
             if (healthView != null && healthView.Health != null)
-            {
                 healthView.Health.Died += OnDied;
-            }
         }
 
         private void Start()
@@ -93,30 +87,42 @@ namespace AdvancedRPG.Gameplay.Enemies
 
         private void Update()
         {
-            if (target == null)
-            {
-                GameObject player = GameObject.FindGameObjectWithTag("Player");
-
-                if (player != null)
-                    target = player.transform;
-            }
-
+            FindTargetIfNeeded();
             stateMachine.Tick();
-
             UpdateMoveAnimation();
         }
 
         private void OnDisable()
         {
             if (healthView != null && healthView.Health != null)
-            {
                 healthView.Health.Died -= OnDied;
-            }
         }
 
         public void Construct(Transform newTarget)
         {
             target = newTarget;
+        }
+
+        public void ApplyWeapon(EnemyWeaponDefinition weapon)
+        {
+            if (weapon == null)
+                return;
+
+            isRanged = weapon.IsRanged;
+            damage = weapon.Damage;
+            damageType = weapon.DamageType;
+            attackCooldown = weapon.AttackCooldown;
+
+            if (weapon.IsRanged)
+            {
+                rangedAttackDistance = weapon.AttackDistance;
+                if (weapon.ProjectilePrefab != null)
+                    projectilePrefab = weapon.ProjectilePrefab;
+            }
+            else
+            {
+                attackDistance = weapon.AttackDistance;
+            }
         }
 
         public float DistanceToTarget()
@@ -142,9 +148,7 @@ namespace AdvancedRPG.Gameplay.Enemies
             if (healthView == null || healthView.Health == null)
                 return false;
 
-            float hpPercent =
-                (float)healthView.Health.Current / healthView.Health.Max;
-
+            float hpPercent = healthView.Health.Current / healthView.Health.Max;
             return hpPercent <= fleeHpPercent;
         }
 
@@ -170,9 +174,19 @@ namespace AdvancedRPG.Gameplay.Enemies
             animator.SetBool(IsAttack, false);
         }
 
+        private void FindTargetIfNeeded()
+        {
+            if (target != null)
+                return;
+
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+                target = player.transform;
+        }
+
         private void UpdateMoveAnimation()
         {
-            if (animator == null || agent == null)
+            if (animator == null || agent == null || !agent.enabled)
                 return;
 
             bool isMoving = agent.velocity.sqrMagnitude > 0.05f;

@@ -15,9 +15,7 @@ namespace AdvancedRPG.Gameplay.Enemies.States
         public void Enter()
         {
             if (context.Agent != null)
-            {
                 context.Agent.isStopped = true;
-            }
 
             context.PlayAttackAnimation();
         }
@@ -37,7 +35,6 @@ namespace AdvancedRPG.Gameplay.Enemies.States
             }
 
             float distance = context.DistanceToTarget();
-
             if (distance > context.AttackDistance)
             {
                 context.ChangeState(new AggroState(context));
@@ -53,23 +50,17 @@ namespace AdvancedRPG.Gameplay.Enemies.States
             context.PlayAttackAnimation();
 
             if (context.IsRanged)
-            {
                 RangedAttack();
-            }
             else
-            {
                 MeleeAttack();
-            }
         }
 
         public void Exit()
         {
             context.StopAttackAnimation();
 
-            if (context.Agent != null)
-            {
+            if (context.Agent != null && context.Agent.enabled)
                 context.Agent.isStopped = false;
-            }
         }
 
         private void LookAtTarget()
@@ -81,11 +72,7 @@ namespace AdvancedRPG.Gameplay.Enemies.States
                 return;
 
             Quaternion rotation = Quaternion.LookRotation(direction);
-
-            context.transform.rotation = Quaternion.Slerp(
-                context.transform.rotation,
-                rotation,
-                Time.deltaTime * 10f);
+            context.transform.rotation = Quaternion.Slerp(context.transform.rotation, rotation, Time.deltaTime * 10f);
         }
 
         private void MeleeAttack()
@@ -96,9 +83,7 @@ namespace AdvancedRPG.Gameplay.Enemies.States
                 return;
             }
 
-            context.MeleeHitbox.Activate(
-                context.gameObject,
-                context.Damage);
+            context.MeleeHitbox.Activate(context.gameObject, context.Damage);
         }
 
         private void RangedAttack()
@@ -115,15 +100,17 @@ namespace AdvancedRPG.Gameplay.Enemies.States
                 return;
             }
 
+            Vector3 direction = (context.Target.position + Vector3.up - context.ProjectileSpawnPoint.position).normalized;
+            Quaternion rotation = direction.sqrMagnitude > 0.001f
+                ? Quaternion.LookRotation(direction)
+                : context.ProjectileSpawnPoint.rotation;
+
             MagicProjectile projectile = Object.Instantiate(
                 context.ProjectilePrefab,
                 context.ProjectileSpawnPoint.position,
-                context.ProjectileSpawnPoint.rotation);
+                rotation);
 
-            projectile.Init(
-                context.gameObject,
-                context.Damage,
-                DamageType.Magical);
+            projectile.Init(context.gameObject, context.Damage, context.DamageType);
         }
     }
 }
