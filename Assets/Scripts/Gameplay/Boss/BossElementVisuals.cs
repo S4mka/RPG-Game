@@ -102,11 +102,31 @@ namespace AdvancedRPG.Gameplay.Boss
                 if (renderer == null)
                     continue;
 
-                renderer.gameObject.SetActive(true);
+                if (IsWeaponRenderer(renderer))
+                    continue;
+
                 renderer.enabled = true;
 
                 ApplyColorToRenderer(renderer, color);
             }
+        }
+
+
+        private bool IsWeaponRenderer(Renderer renderer)
+        {
+            if (allMeleeWeapons == null)
+                return false;
+
+            foreach (GameObject weapon in allMeleeWeapons)
+            {
+                if (weapon == null)
+                    continue;
+
+                if (renderer.transform == weapon.transform || renderer.transform.IsChildOf(weapon.transform))
+                    return true;
+            }
+
+            return false;
         }
 
         private void ApplyParticles(Color color)

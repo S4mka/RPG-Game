@@ -6241,7 +6241,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3f95b91548562c4e96efeaf6184f5f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdvancedRPG.Gameplay.Enemies.MobKillCounter
-  bossPrefab: {fileID: 8525781904888472920, guid: bc179ab10efabdf4795a60e20a1a0bbc, type: 3}
+  bossPrefab: {fileID: 4468744196845627442, guid: 0d9e93bca43cf1c4c9df4f92f34c32ce, type: 3}
   bossSpawnPoint: {fileID: 1144244961}
   killsToSpawnBoss: 3
   killsToPlayVictory: 5
@@ -23321,11 +23321,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2183864405580949335, guid: bc179ab10efabdf4795a60e20a1a0bbc, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2183864405580949335, guid: bc179ab10efabdf4795a60e20a1a0bbc, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4651444933871457037, guid: bc179ab10efabdf4795a60e20a1a0bbc, type: 3}
       propertyPath: Player
