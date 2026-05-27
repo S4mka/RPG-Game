@@ -8,6 +8,7 @@ using TMPro;
 namespace AdvancedRPG.UI
 {
     using AdvancedRPG.Gameplay.Combat;
+    using static UnityEngine.Rendering.DebugUI;
 
     public class PlayerHudController : MonoBehaviour
     {
@@ -25,6 +26,7 @@ namespace AdvancedRPG.UI
 
         [Header("Game Over UI")]
         [SerializeField] private GameObject gameOverPanel;
+        private bool opened;
 
         private void Awake()
         {
@@ -94,6 +96,11 @@ namespace AdvancedRPG.UI
         {
             if (gameOverPanel != null)
                 gameOverPanel.SetActive(true);
+                opened = !opened;
+                gameOverPanel.SetActive(opened);
+                Time.timeScale = opened ? 0f : 1f;
+                Cursor.lockState = opened ? CursorLockMode.None : CursorLockMode.Locked;
+                Cursor.visible = opened;
 
             Time.timeScale = 0f;
         }
