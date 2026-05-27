@@ -1,26 +1,30 @@
-using AdvancedRPG.Audio;
-using AdvancedRPG.Core;
-using AdvancedRPG.Gameplay.Combat;
-using AdvancedRPG.Save;
-using AdvancedRPG.Services;
 using UnityEngine;
 
 namespace AdvancedRPG.Bootstrap
 {
     public sealed class ProjectBootstrapper : MonoBehaviour
     {
+        private static ProjectBootstrapper instance;
+
         [SerializeField] private AudioSource musicSource;
         [SerializeField] private AudioClip victoryClip;
 
+        internal static void ResetInstance()
+        {
+            instance = null;
+        }
+
         private void Awake()
         {
+            if (instance != null && instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            instance = this;
             DontDestroyOnLoad(gameObject);
-            ServiceLocator.Clear();
-            ServiceLocator.Register<IDamageService>(new DamageService());
-            ServiceLocator.Register<ISceneLoader>(new UnitySceneLoader());
-            ServiceLocator.Register<IAudioService>(new UnityAudioService(musicSource, victoryClip));
-            ServiceLocator.Register<ISaveRepository>(new JsonFileSaveRepository("save.json"));
-            ServiceLocator.Register(new SaveLoadInteractor(ServiceLocator.Get<ISaveRepository>()));
+            ProjectServices.RegisterDefaults(musicSource, victoryClip, true);
         }
     }
 }

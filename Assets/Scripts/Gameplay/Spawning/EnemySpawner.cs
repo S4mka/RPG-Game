@@ -1,5 +1,6 @@
 using AdvancedRPG.Gameplay.Enemies;
 using AdvancedRPG.Gameplay.Weapons;
+using AdvancedRPG.Save;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -16,6 +17,7 @@ namespace AdvancedRPG.Gameplay.Spawning
         [SerializeField] private EnemyWeaponDefinition[] rangedWeapons;
 
         [Header("Spawn")]
+        [SerializeField] private string spawnerId;
         [SerializeField] private Transform[] spawnPoints;
         [SerializeField] private int spawnCount = 4;
         [SerializeField] private float randomRadius = 12f;
@@ -28,6 +30,8 @@ namespace AdvancedRPG.Gameplay.Spawning
         [Header("Links")]
         [SerializeField] private Transform target;
         [SerializeField] private MobKillCounter killCounter;
+
+        private int spawnedCount;
 
         private void Start()
         {
@@ -52,6 +56,7 @@ namespace AdvancedRPG.Gameplay.Spawning
                 Quaternion rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
                 EnemyBrain enemy = Instantiate(prefab, position, rotation);
                 enemy.Construct(target);
+                AssignSavableId(enemy);
 
                 EnemyWeaponSlot slot = enemy.GetComponent<EnemyWeaponSlot>();
                 if (slot == null)
@@ -124,6 +129,37 @@ namespace AdvancedRPG.Gameplay.Spawning
                 return hit.position;
 
             return rawPosition;
+        }
+
+        private void AssignSavableId(EnemyBrain enemy)
+        {
+            SavableMob savableMob = enemy.GetComponent<SavableMob>();
+            if (savableMob == null)
+                savableMob = enemy.gameObject.AddComponent<SavableMob>();
+
+            savableMob.SetId($"{GetSpawnerId()}_mob_{spawnedCount}");
+            spawnedCount++;
+        }
+
+        private string GetSpawnerId()
+        {
+            if (!string.IsNullOrWhiteSpace(spawnerId))
+                return spawnerId;
+
+            string sceneName = gameObject.scene.IsValid() ? gameObject.scene.name : "Scene";
+            return $"{sceneName}_{GetHierarchyPath(transform)}";
+        }
+
+        private static string GetHierarchyPath(Transform current)
+        {
+            string path = $"{current.name}_{current.GetSiblingIndex()}";
+            while (current.parent != null)
+            {
+                current = current.parent;
+                path = $"{current.name}_{current.GetSiblingIndex()}_{path}";
+            }
+
+            return path;
         }
     }
 }

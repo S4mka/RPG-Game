@@ -56,6 +56,24 @@ namespace AdvancedRPG.Gameplay.Player
             animator.SetBool("Walk", isWalking);
         }
 
+        public void Teleport(Vector3 position)
+        {
+            verticalVelocity = Vector3.zero;
+
+            if (controller == null)
+                controller = GetComponent<CharacterController>();
+
+            if (controller == null)
+            {
+                transform.position = position;
+                return;
+            }
+
+            controller.enabled = false;
+            transform.position = position;
+            controller.enabled = true;
+        }
+
         private Vector2 ReadMoveInput()
         {
             if (moveAction == null || moveAction.action == null)

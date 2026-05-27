@@ -16,7 +16,15 @@ namespace AdvancedRPG.Gameplay.Combat
         [Header("Animation")]
         [SerializeField] private Animator animator;
 
-        public IHealth Health { get; private set; }
+        private IHealth health;
+        public IHealth Health
+        {
+            get
+            {
+                EnsureHealth();
+                return health;
+            }
+        }
 
         public event Action<CharacterHealthView> Died;
         public event Action<CharacterHealthView, DamageData> Damaged;
@@ -25,7 +33,7 @@ namespace AdvancedRPG.Gameplay.Combat
 
         private void Awake()
         {
-            Health = new HealthModel(maxHp);
+            EnsureHealth();
 
             if (animator == null)
                 animator = GetComponent<Animator>();
@@ -58,6 +66,12 @@ namespace AdvancedRPG.Gameplay.Combat
         public void SetHp(float current, float max)
         {
             Health.Set(current, max);
+        }
+
+        private void EnsureHealth()
+        {
+            if (health == null)
+                health = new HealthModel(maxHp);
         }
 
         private void HandleDeath()
