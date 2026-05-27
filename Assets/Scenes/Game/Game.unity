@@ -5242,6 +5242,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1556867216915445165, guid: ebec99c53d49744418b4b8ed5035fe0b, type: 3}
   m_PrefabInstance: {fileID: 424343715}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &424343717 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2220497613814394647, guid: ebec99c53d49744418b4b8ed5035fe0b, type: 3}
+  m_PrefabInstance: {fileID: 424343715}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &439755336
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14575,6 +14580,11 @@ MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 4353002515478593587, guid: b31cf3d5ac315214a950e823cb9e2b9f, type: 3}
   m_PrefabInstance: {fileID: 1331551097}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1331551100 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2839524829476184550, guid: b31cf3d5ac315214a950e823cb9e2b9f, type: 3}
+  m_PrefabInstance: {fileID: 1331551097}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1334911023
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15500,6 +15510,11 @@ PrefabInstance:
 --- !u!4 &1396734882 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1377784065294677133, guid: a3884a940f9a8d3418a27008b045837c, type: 3}
+  m_PrefabInstance: {fileID: 1396734881}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1396734883 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1753325093932854839, guid: a3884a940f9a8d3418a27008b045837c, type: 3}
   m_PrefabInstance: {fileID: 1396734881}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1402867277
@@ -22031,6 +22046,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8a5a7e5c05bccb94f9d4cfaa5f003430, type: 3}
+--- !u!1 &2018422950 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4417719777104776826, guid: 8a5a7e5c05bccb94f9d4cfaa5f003430, type: 3}
+  m_PrefabInstance: {fileID: 2018422949}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2027649418
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23583,6 +23603,38 @@ PrefabInstance:
       propertyPath: possibleLoadouts.Array.data[7].ElementColor.r
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3381842045647258895, guid: 4e46bf47c41fca249bba7410f62fceb1, type: 3}
+      propertyPath: possibleLoadouts.Array.data[0].MeleeWeaponObject
+      value: 
+      objectReference: {fileID: 2018422950}
+    - target: {fileID: 3381842045647258895, guid: 4e46bf47c41fca249bba7410f62fceb1, type: 3}
+      propertyPath: possibleLoadouts.Array.data[1].MeleeWeaponObject
+      value: 
+      objectReference: {fileID: 1396734883}
+    - target: {fileID: 3381842045647258895, guid: 4e46bf47c41fca249bba7410f62fceb1, type: 3}
+      propertyPath: possibleLoadouts.Array.data[2].MeleeWeaponObject
+      value: 
+      objectReference: {fileID: 1331551100}
+    - target: {fileID: 3381842045647258895, guid: 4e46bf47c41fca249bba7410f62fceb1, type: 3}
+      propertyPath: possibleLoadouts.Array.data[3].MeleeWeaponObject
+      value: 
+      objectReference: {fileID: 424343717}
+    - target: {fileID: 3381842045647258895, guid: 4e46bf47c41fca249bba7410f62fceb1, type: 3}
+      propertyPath: possibleLoadouts.Array.data[4].MeleeWeaponObject
+      value: 
+      objectReference: {fileID: 2018422950}
+    - target: {fileID: 3381842045647258895, guid: 4e46bf47c41fca249bba7410f62fceb1, type: 3}
+      propertyPath: possibleLoadouts.Array.data[5].MeleeWeaponObject
+      value: 
+      objectReference: {fileID: 1396734883}
+    - target: {fileID: 3381842045647258895, guid: 4e46bf47c41fca249bba7410f62fceb1, type: 3}
+      propertyPath: possibleLoadouts.Array.data[6].MeleeWeaponObject
+      value: 
+      objectReference: {fileID: 1331551100}
+    - target: {fileID: 3381842045647258895, guid: 4e46bf47c41fca249bba7410f62fceb1, type: 3}
+      propertyPath: possibleLoadouts.Array.data[7].MeleeWeaponObject
+      value: 
+      objectReference: {fileID: 424343717}
     - target: {fileID: 4167054910200945549, guid: 4e46bf47c41fca249bba7410f62fceb1, type: 3}
       propertyPath: m_Convex
       value: 1
@@ -23615,6 +23667,10 @@ PrefabInstance:
       propertyPath: 'renderers.Array.data[3]'
       value: 
       objectReference: {fileID: 627921192}
+    - target: {fileID: 4447785737243225426, guid: 4e46bf47c41fca249bba7410f62fceb1, type: 3}
+      propertyPath: allMeleeWeapons.Array.size
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 4609360542209087398, guid: 4e46bf47c41fca249bba7410f62fceb1, type: 3}
       propertyPath: m_Enabled
       value: 1
