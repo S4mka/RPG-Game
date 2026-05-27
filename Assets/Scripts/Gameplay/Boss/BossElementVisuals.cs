@@ -4,9 +4,24 @@ namespace AdvancedRPG.Gameplay.Boss
 {
     public sealed class BossElementVisuals : MonoBehaviour
     {
+        [Header("All Boss Melee Weapons")]
+        [SerializeField] private GameObject[] allMeleeWeapons;
+
+        [Header("Additional Renderers")]
         [SerializeField] private Renderer[] renderers;
+
+        [Header("Particles")]
         [SerializeField] private ParticleSystem[] particles;
+
+        [Header("Light")]
         [SerializeField] private Light elementLight;
+
+        [Header("Settings")]
+        [SerializeField] private bool deactivateOtherWeapons = true;
+        [SerializeField] private bool activateSelectedWeapon = true;
+        [SerializeField] private bool colorSelectedWeapon = true;
+        [SerializeField] private bool colorAdditionalRenderers = true;
+        [SerializeField] private bool playParticlesOnApply = true;
 
         public void Apply(BossLoadout loadout)
         {
@@ -15,35 +30,140 @@ namespace AdvancedRPG.Gameplay.Boss
 
             Color color = loadout.ElementColor;
 
-            if (renderers != null)
-            {
-                foreach (Renderer renderer in renderers)
-                {
-                    if (renderer == null)
-                        continue;
+            ApplyWeapon(loadout, color);
+            ApplyAdditionalRenderers(color);
+            ApplyParticles(color);
+            ApplyLight(color);
+        }
 
-                    foreach (Material material in renderer.materials)
-                    {
-                        if (material != null && material.HasProperty("_Color"))
-                            material.color = color;
-                    }
-                }
+        private void ApplyWeapon(BossLoadout loadout, Color color)
+        {
+            if (deactivateOtherWeapons)
+            {
+                DisableAllWeapons();
             }
 
-            if (particles != null)
-            {
-                foreach (ParticleSystem particle in particles)
-                {
-                    if (particle == null)
-                        continue;
+            if (loadout.WeaponType != BossWeaponType.Melee)
+                return;
 
-                    ParticleSystem.MainModule main = particle.main;
-                    main.startColor = color;
-                }
+            if (loadout.MeleeWeaponObject == null)
+            {
+                Debug.LogWarning($"{name}: BossLoadout '{loadout.Name}' has no melee weapon object.");
+                return;
             }
 
-            if (elementLight != null)
-                elementLight.color = color;
+            if (activateSelectedWeapon)
+            {
+                loadout.MeleeWeaponObject.SetActive(true);
+            }
+
+            if (!colorSelectedWeapon)
+                return;
+
+            Renderer[] weaponRenderers =
+                loadout.MeleeWeaponObject.GetComponentsInChildren<Renderer>(true);
+
+            foreach (Renderer weaponRenderer in weaponRenderers)
+            {
+                if (weaponRenderer == null)
+                    continue;
+
+                weaponRenderer.gameObject.SetActive(true);
+                weaponRenderer.enabled = true;
+
+                ApplyColorToRenderer(weaponRenderer, color);
+            }
+        }
+
+        private void DisableAllWeapons()
+        {
+            if (allMeleeWeapons == null)
+                return;
+
+            foreach (GameObject weapon in allMeleeWeapons)
+            {
+                if (weapon == null)
+                    continue;
+
+                weapon.SetActive(false);
+            }
+        }
+
+        private void ApplyAdditionalRenderers(Color color)
+        {
+            if (!colorAdditionalRenderers)
+                return;
+
+            if (renderers == null)
+                return;
+
+            foreach (Renderer renderer in renderers)
+            {
+                if (renderer == null)
+                    continue;
+
+                renderer.gameObject.SetActive(true);
+                renderer.enabled = true;
+
+                ApplyColorToRenderer(renderer, color);
+            }
+        }
+
+        private void ApplyParticles(Color color)
+        {
+            if (particles == null)
+                return;
+
+            foreach (ParticleSystem particle in particles)
+            {
+                if (particle == null)
+                    continue;
+
+                particle.gameObject.SetActive(true);
+
+                ParticleSystem.MainModule main = particle.main;
+                main.startColor = color;
+
+                if (playParticlesOnApply)
+                    particle.Play();
+            }
+        }
+
+        private void ApplyLight(Color color)
+        {
+            if (elementLight == null)
+                return;
+
+            elementLight.gameObject.SetActive(true);
+            elementLight.enabled = true;
+            elementLight.color = color;
+        }
+
+        private void ApplyColorToRenderer(Renderer renderer, Color color)
+        {
+            Material[] materials = renderer.materials;
+
+            foreach (Material material in materials)
+            {
+                if (material == null)
+                    continue;
+
+                if (material.HasProperty("_Color"))
+                {
+                    material.color = color;
+                }
+
+                if (material.HasProperty("_BaseColor"))
+                {
+                    material.SetColor("_BaseColor", color);
+                }
+
+                if (material.HasProperty("_EmissionColor"))
+                {
+                    material.EnableKeyword("_EMISSION");
+                    material.SetColor("_EmissionColor", color);
+                }
+            }
         }
     }
 }

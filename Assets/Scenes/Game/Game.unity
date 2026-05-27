@@ -1066,7 +1066,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 562d397ca34e8de49944fbbe36eba1e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdvancedRPG.Save.SavableMob
-  id: 2
+  id: 
 --- !u!114 &88639543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10661,7 +10661,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 562d397ca34e8de49944fbbe36eba1e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdvancedRPG.Save.SavableMob
-  id: 2
+  id: 
 --- !u!114 &902608440
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13216,7 +13216,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1203591034}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 55}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -17404,10 +17404,10 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1203591035}
   - {fileID: 735242053}
   - {fileID: 1298404324}
   - {fileID: 443777773}
-  - {fileID: 1203591035}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -21837,7 +21837,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 562d397ca34e8de49944fbbe36eba1e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdvancedRPG.Save.SavableMob
-  id: 2
+  id: 
 --- !u!114 &2006555583
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22851,7 +22851,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 562d397ca34e8de49944fbbe36eba1e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdvancedRPG.Save.SavableMob
-  id: 1
+  id: 
 --- !u!114 &2129361316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23639,6 +23639,9 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 424343716}
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1743559984617059162, guid: 4e46bf47c41fca249bba7410f62fceb1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4242414182280794255}
     - targetCorrespondingSourceObject: {fileID: 8122291239706696261, guid: 4e46bf47c41fca249bba7410f62fceb1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1044087772}
@@ -23651,7 +23654,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4447785737243225426, guid: 4e46bf47c41fca249bba7410f62fceb1, type: 3}
   m_PrefabInstance: {fileID: 4242414182280794251}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 4242414182280794254}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bcc746f7c17273b4bac79c5a3492256d, type: 3}
@@ -23662,6 +23665,24 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7757241305664957933, guid: 4e46bf47c41fca249bba7410f62fceb1, type: 3}
   m_PrefabInstance: {fileID: 4242414182280794251}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &4242414182280794254 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1743559984617059162, guid: 4e46bf47c41fca249bba7410f62fceb1, type: 3}
+  m_PrefabInstance: {fileID: 4242414182280794251}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4242414182280794255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4242414182280794254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 562d397ca34e8de49944fbbe36eba1e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AdvancedRPG.Save.SavableMob
+  id: 
 --- !u!1001 &4940228576338497689
 PrefabInstance:
   m_ObjectHideFlags: 0
