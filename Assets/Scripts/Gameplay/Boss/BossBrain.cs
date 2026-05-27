@@ -27,6 +27,7 @@ namespace AdvancedRPG.Gameplay.Boss
         [Header("Boss Settings")]
         public float AggroDistance = 15f;
         public float AttackDistance = 3f;
+        private float Delay;
         public int Damage = 30;
         [SerializeField] private bool peacefulUntilHit = true;
         [SerializeField] private float strongAttackMultiplier = 1.7f;
@@ -36,6 +37,7 @@ namespace AdvancedRPG.Gameplay.Boss
         [SerializeField] private BossLoadout[] possibleLoadouts;
         [SerializeField] private bool chooseRandomLoadoutOnStart = true;
         [SerializeField] private BossLoadout startLoadout;
+
 
         [Header("Compatibility")]
         public LayerMask PlayerMask;
@@ -75,7 +77,7 @@ namespace AdvancedRPG.Gameplay.Boss
         {
             if (Health != null)
             {
-                previousHealth = Health.Health.Current;
+                previousHealth = Health.Health.Max;
                 Health.Health.Changed += OnHealthChanged;
                 Health.Health.Died += OnDied;
                 Health.Damaged += OnDamaged;
@@ -168,21 +170,24 @@ namespace AdvancedRPG.Gameplay.Boss
 
         private void ChooseLoadout()
         {
-            if (chooseRandomLoadoutOnStart && possibleLoadouts != null && possibleLoadouts.Length > 0)
-                CurrentLoadout = possibleLoadouts[Random.Range(0, possibleLoadouts.Length)];
-            else
-                CurrentLoadout = startLoadout;
-
-            if (CurrentLoadout == null)
+            if (possibleLoadouts == null || possibleLoadouts.Length == 0)
+            {
+                Debug.LogWarning($"{name}: Boss has no possible loadouts.");
                 return;
+            }
+
+            CurrentLoadout = possibleLoadouts[Random.Range(0, possibleLoadouts.Length)];
 
             Damage = CurrentLoadout.Damage;
             AttackDistance = CurrentLoadout.AttackDistance;
+            Delay = CurrentLoadout.AttackDelay;
 
-            if (CurrentLoadout.ProjectilePrefab != null)
-                StrongProjectilePrefab = CurrentLoadout.ProjectilePrefab;
+            if (elementVisuals != null)
+            {
+                elementVisuals.Apply(CurrentLoadout);
+            }
 
-            elementVisuals?.Apply(CurrentLoadout);
+            Debug.Log($"{name}: selected loadout {CurrentLoadout.Name}");
         }
 
         private float GetCurrentAttackDelay()
